@@ -1,1 +1,15 @@
 @import "./scrollbar.scss";
+@import "./variables.scss";
+@import "./iconfont.scss";
+@import url('https://cdn-uicons.flaticon.com/2.1.0/uicons-bold-straight/css/uicons-bold-straight.css');
+
+* {
+    padding: 0px;
+    margin: 0px;
+    list-style: none;
+}
+
+
+.border {
+    border: 1px white solid;
+}

@@ -1,22 +1,37 @@
-# vue3-ts-vite-konvajs
+### konva 編輯器
 
-## 简介
+![首頁](https://github.com/FelixMitsui/konva-editor/blob/main/public/images/konva動畫.gif?raw=true)
 
-[vue3-ts-vite-konvajs](https://github.com/lpya/vue3-ts-vite-konvajs)是一个konvajs基础使用教程，它包含了矩形、圆、文本、多边形基本图形和常用的事件，还提供了项目实战案例，如果想要其它效果也可以在issues提出来
+部屬網址: https://konva-editor.vercel.app/
 
-## 开发
+## 介紹
 
-```
-#克隆项目
-git clone https://github.com/lpya/vue3-ts-vite-konvajs.git
+這個專案專注在應用Konavjs為主，這是一個HTML5 canvas套件，提供了許多幫助使用者快速開發畫布相關的函式，
+Konva的對象顯示於Stage(舞台)上，對象主要以Layer(圖層)嵌套Group(群組)或是形狀(Shape)，以及改變形狀的
+變換器(transformer)，還有動畫等多種功能。
 
-#进入项目目录
-cd vue3-ts-vite-konvajs
+## 主要應用
 
-#安装依赖
-npm install
+# Vue3
+# Pinia
+# Element-Plus
+# Konavjs(canvas)
 
-#启动服务
-npm run dev
 
-```
+## 開發項目
+
+1. 拖曳形狀、移動以及刪除。
+2. 形狀顏色填充、邊框粗度修改與顏色變更。
+3. 縮放形狀、旋轉。
+4. 新增圖層至側欄以及圖層切換到主畫布。
+
+## 技術探討
+
+1. 如何使用konva?
+   將konva邏輯封裝在class，並由pinia呼叫與管理konva實例，方便在組件上直接使用。
+2. 拖曳形狀是怎麼實現的?
+   標籤屬性draggable為true，表示為可拖曳，並依照拖曳標籤的type(形狀的類型)，
+   於畫布上創建相對應的形狀。
+3. 側欄圖層切換至主畫布是怎麼實現?
+   新增圖層時，創建空的圖層實例存放至圖層的陣列，在切換圖層時，將當前的圖層內容存放回原索引，
+   並將切換到的圖層取出，便可以操作取出的對象，並且在顯示側欄圖層時，以圖片的形式顯示。

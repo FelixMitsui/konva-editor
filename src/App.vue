@@ -1,16 +1,11 @@
-
 <template>
-  <el-config-provider :locale="zhCn">
+  <div class="container">
     <router-view></router-view>
-  </el-config-provider>
+  </div>
 </template>
-<script lang="ts" setup>
-import zhCn from 'element-plus/lib/locale/lang/zh-cn'
-</script>
-<style lang="scss">
-* {
-  padding: 0px;
-  margin: 0px;
-  list-style: none;
+<script lang="ts" setup></script>
+<style scoped lang="scss">
+.container {
+  height: 100%;
 }
 </style>
