@@ -12,10 +12,10 @@ Konva的對象顯示於Stage(舞台)上，對象主要以Layer(圖層)嵌套Grou
 
 ## 主要應用
 
-# Vue3
-# Pinia
-# Element-Plus
-# Konavjs(canvas)
+ Vue3
+ Pinia
+ Element-Plus
+ Konavjs(canvas)
 
 
 ## 開發項目
