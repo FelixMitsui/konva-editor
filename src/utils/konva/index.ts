@@ -7,6 +7,7 @@ export class KonvaJS {
   public layer: Konva.Layer | null
   public transf: Konva.Transformer | null
   public group: Konva.Group | null
+  public zoom: number
   public type: ShapeType | TextType | null
   public isMenuVisible: boolean
   public isUpdateSideLayer: boolean
@@ -26,6 +27,7 @@ export class KonvaJS {
     this.layer = null
     this.transf = null
     this.group = null
+    this.zoom = 1
     //控制目標顯示隱藏選單
     this.isMenuVisible = false
     //控制左側圖層區域更新
@@ -34,6 +36,7 @@ export class KonvaJS {
     this.slideshows = []
     //選取目標屬性
     this.currentAttrs = {}
+    //畫布背景
     //隱藏選單內容
     this.menuList = menuList
   }
@@ -43,12 +46,15 @@ export class KonvaJS {
       return
     }
     const { clientWidth, clientHeight } = el
-
+    const x = clientWidth / 2 - clientWidth / 2
+    const y = clientHeight / 2 - clientHeight / 2
     //此處建立主舞台
     this.stage = new Konva.Stage({
       container: this.id,
       width: clientWidth,
       height: clientHeight,
+      x: x,
+      y: y,
       draggable: false,
       type: ShapeType.CANVAS,
     })
@@ -57,7 +63,7 @@ export class KonvaJS {
     this.layer = layer
     this.group = group
     this.transf = transf
-    this.group.add(this.transf)
+    this.layer.add(this.transf)
     this.layer.add(this.group)
     this.stage.add(this.layer)
 
@@ -69,24 +75,25 @@ export class KonvaJS {
     }
     const width = this.stage.width()
     const height = this.stage.height()
-    const x = this.stage.width() / 2 - width / 2
-    const y = this.stage.height() / 2 - height / 2
+    const x = width / 2 - width / 2
+    const y = height / 2 - height / 2
     const board = new Konva.Rect({
       id: this.getUUID(),
-      title: '畫板',
+      title: 'board',
       name: 'board',
       x: x,
       y: y,
       width: width,
       height: height,
-      fill: '#ffffff',
-      type: ShapeType.BOARD,
-      stroke: '#ffffff',
-      strokeWidth: 1,
-      opacity: 1,
-      create: true,
       scaleX: 1,
       scaleY: 1,
+      fill: '#ffffff',
+      draggable: false,
+      stroke: '#ffffff',
+      strokeWidth: 0,
+      type: ShapeType.BOARD,
+      opacity: 1,
+      isEdit: true,
     })
     return board
   }
@@ -149,9 +156,9 @@ export class KonvaJS {
     this.layer = this.slideshows[index].layer
     this.group = this.slideshows[index].group
     this.transf = this.slideshows[index].transf
-    this.group.add(this.transf)
-    this.layer.add(this.group)
+    this.layer.add(this.transf, this.group)
     this.stage?.add(this.layer)
+    this.changeZoom(this.zoom)
   }
   //建立圖層
   newLayer() {
@@ -191,7 +198,7 @@ export class KonvaJS {
       width: 200,
       height: 100,
       opacity: 1,
-      create: true,
+      isEdit: true,
       scaleX: 1,
       scaleY: 1,
       ...data,
@@ -239,7 +246,7 @@ export class KonvaJS {
       case ShapeType.LINE:
         return new Konva.Line({
           name: type,
-          create: true,
+          isEdit: true,
           draggable: true,
           ...data,
           type: type,
@@ -261,7 +268,7 @@ export class KonvaJS {
       case ShapeType.ARROW:
         return new Konva.Arrow({
           name: type,
-          create: true,
+          isEdit: true,
           draggable: true,
           ...data,
           type: type,
@@ -290,13 +297,16 @@ export class KonvaJS {
       id: id,
       title: `text${allTexts.length + 1}`,
       name: 'text',
-      text: '編輯文本',
-      fontSize: 16,
+      text: '雙擊編輯文本',
+      fontSize: 24,
+      fontStyle: '',
+      padding: 10,
+      opacity: 1,
       scaleX: 1,
       scaleY: 1,
       draggable: true,
       type: 'text',
-      create: true,
+      isEdit: true,
     })
     text.position(position)
     this.group?.add(text)
@@ -309,53 +319,30 @@ export class KonvaJS {
     }
     //舞台內容元素
     const container = this.stage.container()
-    //舞台點擊監聽
-    this.stage.on('click', (event: Konva.KonvaEventObject<MouseEvent>) => {
-      const dom = event.target
-      this.isMenuVisible = false
-      //右鍵點擊
-      if (event.evt.button === 2) {
-        this.getShapeAttrs(dom)
-        if (!this.isMenuVisible) {
-          this.isMenuVisible = true
-          const menuDom = document.querySelector('.contextMenu') as HTMLElement
-          if (!menuDom) {
-            return
-          }
-          if (dom.getAbsoluteZIndex() === 5) {
-            this.menuList[1].disabled = true
-          } else {
-            this.menuList[1].disabled = false
-          }
-          menuDom.style.left = `${event.evt.clientX + 10}px`
-          menuDom.style.top = `${event.evt.clientY + 1}px`
-        }
-      }
-    })
     //舞台滑鼠按下監聽
     this.stage.on(
       'mousedown',
       (event: Konva.KonvaEventObject<MouseEvent>): void => {
+        //禁止側欄更新畫面
         this.isUpdateSideLayer = false
+        //重製右鍵選單
+        this.isMenuVisible = false
         const dom = event.target
         const domAttrs = dom.getAttrs()
-        if (event.evt.button === 1) {
-          this.stage?.draggable(true)
-        }
 
+        //點擊目標是舞台直接退出
+        if (domAttrs.type === ShapeType.CANVAS) {
+          return
+        }
+        //點擊左鍵
         if (event.evt.button === 0) {
-          if (domAttrs.type === ShapeType.CANVAS) {
-            const target = this.stage?.findOne(`#${domAttrs.id}`)
-            if (target) {
-              this.getShapeAttrs(target)
-            }
-            this.transf?.nodes([])
+          //目標不可編輯退出
+          if (!domAttrs.isEdit) {
             return
           }
-          if (!domAttrs.create) {
-            return
-          }
+
           this.getShapeAttrs(dom)
+
           if (
             domAttrs.type === ShapeType.LINE ||
             domAttrs.type === ShapeType.ARROW
@@ -383,13 +370,33 @@ export class KonvaJS {
               'bottom-right',
             ])
           }
-
           this.transf?.nodes([dom])
+        }
+        //右鍵
+        if (event.evt.button === 2) {
+          this.getShapeAttrs(dom)
+          if (!this.isMenuVisible) {
+            this.isMenuVisible = true
+            const menuDom = document.querySelector(
+              '.contextMenu',
+            ) as HTMLElement
+            if (!menuDom) {
+              return
+            }
+            if (dom.getAbsoluteZIndex() === 5) {
+              this.menuList[1].disabled = true
+            } else {
+              this.menuList[1].disabled = false
+            }
+            menuDom.style.left = `${event.evt.clientX + 10}px`
+            menuDom.style.top = `${event.evt.clientY + 1}px`
+          }
         }
       },
     )
     //舞台滑鼠釋放監聽
     this.stage.on('mouseup', (event: Konva.KonvaEventObject<MouseEvent>) => {
+      //允許側欄更新畫面
       this.isUpdateSideLayer = true
     })
     //拖曳元素在舞台上
@@ -420,7 +427,7 @@ export class KonvaJS {
       }
     })
   }
-
+  //監聽形狀
   listenerShapeEvents(shape: Konva.Node) {
     if (!shape) return
 
@@ -434,23 +441,69 @@ export class KonvaJS {
       this.getShapeAttrs(event.target)
     })
   }
+  //監聽文本
   listenerTextEvents(text: Konva.Node) {
     if (!text) return
 
     text.off('transform')
     text.off('dragmove')
 
+    text.on('mousedown', (event) => {
+      this.currentAttrs = event.target.getAttrs()
+    })
     text.on('transform', (event) => {
       this.getTextAttrs(event.target)
     })
     text.on('dragmove', (event) => {
       this.getTextAttrs(event.target)
     })
+
+    text.on('dblclick', () => {
+      const position = text.getAbsolutePosition()
+      const input = document.createElement('textarea')
+      input.style.position = 'absolute'
+      input.style.left = position.x + 'px'
+      input.style.top = position.y + 'px'
+      input.style.width = text.width() + 'px'
+      input.style.height = text.height() + 'px'
+      input.value = text.attrs.text
+      input.style.outline = 'none'
+      input.style.resize = 'vertical'
+      input.style.textDecoration = text.attrs.textDecoration
+      input.style.fontStyle = text.attrs.fontStyle.includes('italic')
+        ? 'italic'
+        : ''
+      input.style.fontWeight = text.attrs.fontStyle.includes('bold')
+        ? 'bold'
+        : ''
+      input.style.fontSize = (text.attrs.fontSize + 'px').toString()
+      const canvas = document.getElementById('canvas')
+      canvas?.appendChild(input)
+      input.focus()
+
+      text.setAttrs({ text: '' })
+
+      input.addEventListener('blur', function () {
+        input.remove()
+        text.setAttrs({ text: input.value })
+      })
+    })
   }
   getTextAttrs(text: Konva.Node) {
     if (this.transf) {
-      const { id, title, stroke, strokeWidth, width, height, x, y, type } =
-        text.getAttrs()
+      const {
+        id,
+        title,
+        stroke,
+        strokeWidth,
+        width,
+        opacity,
+        fontSize,
+        height,
+        x,
+        y,
+        type,
+      } = text.getAttrs()
       const selectedNode = this.transf.nodes()[0]
 
       const scaleX = selectedNode.scaleX()
@@ -463,6 +516,8 @@ export class KonvaJS {
         strokeWidth,
         width,
         height,
+        fontSize,
+        opacity,
         x: Math.round(x),
         y: Math.round(y),
         type,
@@ -508,12 +563,16 @@ export class KonvaJS {
     if (type === ShapeType.RECT || type === ShapeType.LINE) {
       attrs.width = Math.round(width * scaleX)
       attrs.height = Math.round(height * scaleY)
+    } else if (type === ShapeType.BOARD) {
+      attrs.width = Math.round(this.stage?.width())
+      attrs.height = Math.round(this.stage?.height())
     } else {
       attrs.width = Math.round(200 * scaleX)
       attrs.height = Math.round(200 * scaleY)
     }
     attrs.x = Math.round(x)
     attrs.y = Math.round(y)
+
     this.currentAttrs = attrs
   }
 
@@ -526,8 +585,8 @@ export class KonvaJS {
     if (!target) {
       return
     }
-    const mergedAttrs = Object.assign({}, target.attrs, attr)
-    target.setAttrs(mergedAttrs)
+    console.log(target)
+    target.setAttrs(attr)
   }
   pickMenuOption(type: string) {
     const target = this.stage?.findOne(`#${this.currentAttrs.id}`)
@@ -543,7 +602,36 @@ export class KonvaJS {
       target.moveDown()
     } else if (type === 'destroy') {
       target.destroy()
+      this.isMenuVisible = false
     }
     this.transf?.nodes([])
+  }
+
+  changeZoom(command: number) {
+    if (!this.stage) return
+    const scaleFactor = Number(command)
+    if (this.stage.attrs.scaleX === scaleFactor) return
+    this.zoom = scaleFactor
+    if (!this.stage) return
+    const newWidth = (this.stage?.width() as number) * scaleFactor
+    const newHeight = (this.stage?.height() as number) * scaleFactor
+
+    const x = Math.round(
+      this.stage.attrs.x -
+        (newWidth - this.stage?.width()) / 2 -
+        this.stage.attrs.x,
+    )
+    const y = Math.round(
+      this.stage.attrs.y -
+        (newHeight - this.stage?.height()) / 2 -
+        this.stage.attrs.y,
+    )
+    this.stage.setAttrs({
+      x: x,
+      y: y,
+      scaleX: scaleFactor,
+      scaleY: scaleFactor,
+    })
+    this.layer?.draw()
   }
 }

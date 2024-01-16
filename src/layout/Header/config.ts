@@ -1,0 +1,16 @@
+export const fontSizes = [
+  '12px',
+  '14px',
+  '16px',
+  '18px',
+  '20px',
+  '22px',
+  '24px',
+  '28px',
+  '32px',
+  '36px',
+  '40px',
+  '44px',
+  '48px',
+  '54px',
+]

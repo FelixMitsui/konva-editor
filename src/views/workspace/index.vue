@@ -35,24 +35,30 @@ onMounted(() => {
 .container {
   width: 100%;
   height: 100%;
-  padding: 0.5rem;
   display: flex;
   justify-content: center;
 }
 #canvas {
-  margin: 0.5rem;
-  border: 2px solid gray;
-  background: $canvas-background;
   height: 100%;
-  min-height: 485px;
+  width: 100%;
+  background: $canvas-background;
+  position: relative;
+  z-index: 500;
 }
+
 .el-col {
+  padding: 0.5rem;
   overflow-x: auto;
   height: 100%;
 }
-.el-col:last-child {
+.el-col:nth-child(2) {
+  border: 5px solid gray;
+  background: $base-background;
+  padding: 0.5rem;
+  overflow-y: hidden;
   height: 100%;
 }
+
 @media screen and (min-width: 768px) {
   .el-col {
     overflow-x: hidden;

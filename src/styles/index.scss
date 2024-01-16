@@ -1,12 +1,16 @@
 @import "./scrollbar.scss";
 @import "./variables.scss";
 @import "./iconfont.scss";
+@import url('https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css');
+@import url('https://cdn-uicons.flaticon.com/2.1.0/uicons-bold-rounded/css/uicons-bold-rounded.css');
+@import url('https://cdn-uicons.flaticon.com/2.1.0/uicons-thin-rounded/css/uicons-thin-rounded.css');
 @import url('https://cdn-uicons.flaticon.com/2.1.0/uicons-bold-straight/css/uicons-bold-straight.css');
 
 * {
     padding: 0px;
     margin: 0px;
     list-style: none;
+    box-sizing: border-box;
 }
 
 
