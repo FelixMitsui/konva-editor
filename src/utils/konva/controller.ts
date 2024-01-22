@@ -20,6 +20,25 @@ export default class Controller {
   updatePickAttrs(attr: Konva.NodeConfig) {
     if (!this.konva.stage) return
 
+    const type = this.konva.selectTarget.attrs.type
+    if (
+      type === 'star' ||
+      type === 'fan' ||
+      type === 'hexagon' ||
+      type === 'pentagon' ||
+      type === 'rhombus' ||
+      type === 'ellipse' ||
+      type === 'circle'
+    ) {
+      attr = {
+        ...attr,
+        offset: {
+          x: 0,
+          y: 0,
+        },
+      }
+    }
+
     this.konva.selectTarget.setAttrs(attr)
     this.konva.selectTarget.draw()
     this.konva.transf?.nodes([this.konva.selectTarget])

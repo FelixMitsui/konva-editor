@@ -44,6 +44,7 @@ const handleSwitchSlideshow = (index: number) => {
 
 watchEffect(() => {
   if (konva.isUpdateSideLayer) {
+    console.log('更新')
     konva.slideshows.forEach((konva: Konva.LabelConfig, index: number) => {
       if (slideshowUrls[index] && focusRef.value !== index) return
       const url = konva.layer.toDataURL()

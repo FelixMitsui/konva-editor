@@ -87,12 +87,6 @@ export default class Listener {
         }
       },
     )
-    //舞台滑鼠釋放監聽
-    this.konva.stage.on('mouseup', () => {
-      //允許側欄更新畫面
-      this.konva.isUpdateSideLayer = true
-    })
-
     //拖曳元素在舞台上
     container.addEventListener('dragover', (event: DragEvent) => {
       event.preventDefault()
@@ -117,24 +111,38 @@ export default class Listener {
   //監聽形狀
   shapeEvent(shape: Konva.Node) {
     if (!shape) return
-
+    shape.on('dragstart', () => {
+      this.konva.isUpdateSideLayer = false
+    })
+    shape.on('transformstart', () => {
+      this.konva.isUpdateSideLayer = false
+    })
     shape.on('transformend', () => {
       const attrs = shape.getAttrs()
       this.konva.selectTarget.attrs = { ...attrs }
+      this.konva.isUpdateSideLayer = true
     })
 
     shape.on('dragend', () => {
       const attrs = shape.getAttrs()
       this.konva.selectTarget.attrs = { ...attrs }
+      this.konva.isUpdateSideLayer = true
     })
   }
   //監聽文本
   textEvent(text: Konva.Node) {
     if (!text) return
 
+    text.on('dragstart', () => {
+      this.konva.isUpdateSideLayer = false
+    })
+    text.on('transformstart', () => {
+      this.konva.isUpdateSideLayer = false
+    })
     text.on('dragend', () => {
       const target = text.getAttrs()
       this.konva.selectTarget.attrs = { ...target }
+      this.konva.isUpdateSideLayer = true
     })
 
     text.on('transform', () => {
@@ -148,17 +156,29 @@ export default class Listener {
     text.on('transformend', () => {
       const target = text.getAttrs()
       this.konva.selectTarget.attrs = { ...target }
+      this.konva.isUpdateSideLayer = true
     })
     text.on('dblclick', () => {
       //創建文字框
       const position = text.getAbsolutePosition()
       const input = document.createElement('textarea')
       input.style.position = 'absolute'
-      input.style.left = position.x + 'px'
+      const rotation = text.rotation()
+      const offset = text.offset()
+      const rotatedOffset = {
+        x:
+          offset.x * Math.cos((rotation * Math.PI) / 180) -
+          offset.y * Math.sin((rotation * Math.PI) / 180),
+        y:
+          offset.x * Math.sin((rotation * Math.PI) / 180) +
+          offset.y * Math.cos((rotation * Math.PI) / 180),
+      }
+
+      input.style.left = `${position.x - rotatedOffset.x}px`
       input.style.padding = '10px'
       input.style.color = text.attrs.fill
-      input.style.top = position.y + 'px'
-      input.style.transform = `rotate(${text.rotation()}deg)`
+      input.style.top = `${position.y - rotatedOffset.y}px`
+      input.style.transform = `rotate(${rotation}deg)`
       input.style.transformOrigin = 'top left'
       input.style.width = text.width() + 'px'
       input.style.height = text.height() + 'px'
@@ -176,7 +196,6 @@ export default class Listener {
       const canvas = document.getElementById('canvas')
       canvas?.appendChild(input)
       input.focus()
-
       text.setAttrs({ text: '', skewX: 0 })
 
       input.addEventListener('blur', function () {

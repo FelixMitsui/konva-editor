@@ -57,15 +57,15 @@ export default class Drawer {
       strokeWidth: 1,
       draggable: true,
       type: type,
-      width: 200,
-      height: 100,
+      width: 100,
+      height: 50,
       opacity: 1,
       isEdit: true,
       scaleX: 1,
       scaleY: 1,
       offset: {
-        x: 200 / 2,
-        y: 100 / 2,
+        x: 100 / 2,
+        y: 50 / 2,
       },
       ...data,
     } as Konva.NodeConfig
@@ -73,41 +73,87 @@ export default class Drawer {
     switch (type) {
       case GraphType.RECT:
         return new Konva.Rect(attrs)
-      case GraphType.PARALLELOGRAM:
+      case GraphType.PARALLELOGRAM: {
         return new Konva.Rect({
           ...attrs,
           skewX: -0.5,
         })
-      case GraphType.RHOMBUS:
+      }
+
+      case GraphType.RHOMBUS: {
+        const { offset, ...rest } = attrs
         return new Konva.RegularPolygon({
-          ...attrs,
+          ...rest,
           sides: 4,
+          offset: {
+            x: 0,
+            y: 0,
+          },
         } as Konva.RegularPolygonConfig)
-      case GraphType.PENTAGON:
+      }
+
+      case GraphType.PENTAGON: {
+        const { width, height, offset, ...rest } = attrs
         return new Konva.RegularPolygon({
-          ...attrs,
+          ...rest,
           sides: 5,
           radius: 50,
+          offset: {
+            x: 0,
+            y: 0,
+          },
         } as Konva.RegularPolygonConfig)
-      case GraphType.HEXAGON:
+      }
+
+      case GraphType.HEXAGON: {
+        const { width, height, offset, ...rest } = attrs
         return new Konva.RegularPolygon({
-          ...attrs,
+          ...rest,
           sides: 6,
           radius: 50,
+          offset: {
+            x: 0,
+            y: 0,
+          },
         } as Konva.RegularPolygonConfig)
-      case GraphType.STAR:
-        return new Konva.Star({
-          ...attrs,
+      }
+
+      case GraphType.STAR: {
+        const { width, height, offset, ...rest } = attrs
+         return new Konva.Star({
+          ...rest,
           numPoints: 5,
-          innerRadius: 50,
-          outerRadius: 50,
+          innerRadius: 80,
+          outerRadius: 30,
+          offset: {
+            x: 0,
+            y: 0,
+          },
         })
-      case GraphType.FAN:
-        return new Konva.Wedge({ ...attrs, radius: 50, angle: 90 })
-      case GraphType.CIRCLE: {
-        return new Konva.Circle({
-          ...attrs,
+      }
+       
+      case GraphType.FAN: {
+        const { width, height, offset, ...rest } = attrs
+        return new Konva.Wedge({
+          ...rest,
           radius: 50,
+          angle: 90,
+          offset: {
+            x: 0,
+            y: 0,
+          },
+        })
+      }
+
+      case GraphType.CIRCLE: {
+        const { width, height, offset, ...rest } = attrs
+        return new Konva.Circle({
+          ...rest,
+          radius: 50,
+          offset: {
+            x: 0,
+            y: 0,
+          },
         })
       }
       case GraphType.LINE:
@@ -121,13 +167,21 @@ export default class Drawer {
           lineCap: 'round',
           lineJoin: 'round',
         })
-      case GraphType.ELLIPSE:
+      case GraphType.ELLIPSE: {
+        const { width, height, offset, ...rest } = attrs
         return new Konva.Ellipse({
-          ...attrs,
+          ...rest,
           radiusX: 50,
           radiusY: 25,
+          offset: {
+            x: 0,
+            y: 0,
+          },
         })
-      case GraphType.ARROW:
+      }
+
+      case GraphType.ARROW: {
+ 
         return new Konva.Arrow({
           ...attrs,
           ...data,
@@ -138,17 +192,26 @@ export default class Drawer {
           stroke: 'black',
           strokeWidth: 3,
         })
+      }
+
       case TextType.TEXT: {
+        const { width, height, offset, ...rest } = attrs
         return new Konva.Text({
-          ...attrs,
+          ...rest,
           ...data,
           text: '雙擊編輯文本',
           fontSize: 24,
           fontStyle: '',
+          width: 170,
+          height: 40,
           strokeWidth: 0,
           align: 'left',
           padding: 10,
           fill: 'black',
+          offset: {
+            x: 170 / 2,
+            y: 40 / 2,
+          },
         })
       }
       default:
