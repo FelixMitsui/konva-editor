@@ -1,4 +1,4 @@
-export enum ShapeType {
+export enum GraphType {
   RECT = 'rect',
   PARALLELOGRAM = 'parallelogram',
   RHOMBUS = 'rhombus',
@@ -12,22 +12,16 @@ export enum ShapeType {
   TRAPEZIUM = 'trapezium',
   FAN = 'fan',
   CANVAS = 'canvas',
-  BOARD = 'board',
+  STAGE = 'stage',
   ELLIPSE = 'ellipse',
 }
 export enum TextType {
   TEXT = 'text',
 }
-
-export interface IText {
+export interface IGraph {
   name: string
   icon: string
-  type: TextType
-}
-export interface IShape {
-  name: string
-  icon: string
-  type: ShapeType
+  type: GraphType
 }
 
 export interface IMenuList {

@@ -1,7 +1,7 @@
 <template>
   <el-row class="container">
     <el-col :xs="24" :sm="7" :md="5">
-      <Side :konva="konva"></Side>
+      <Side></Side>
     </el-col>
     <el-col :xs="24" :sm="17" :md="19">
       <div
@@ -15,19 +15,18 @@
 
 <script lang="ts" setup>
 import { onMounted } from 'vue'
-import useShapeStore from '@/store/modules/shape'
+import useKonvaStore from '@/store/modules/konva'
 import ContextMenu from '@/components/ContextMenu/index.vue'
 import Side from '@/components/Side/index.vue'
 
-const { konva } = useShapeStore()
+const { konva } = useKonvaStore()
 
 onMounted(() => {
   //初始化Konva對象
   konva.init()
-
-  window.onresize = () => {
-    konva.onresize()
-  }
+  // window.onresize = () => {
+  //   konva.controller.onresize()
+  // }
 })
 </script>
 
@@ -41,7 +40,6 @@ onMounted(() => {
 #canvas {
   height: 100%;
   width: 100%;
-  background: $canvas-background;
   position: relative;
   z-index: 500;
 }
@@ -49,7 +47,6 @@ onMounted(() => {
 .el-col {
   padding: 0.5rem;
   overflow-x: auto;
-  height: 100%;
 }
 .el-col:nth-child(2) {
   border: 5px solid gray;
@@ -61,6 +58,7 @@ onMounted(() => {
 
 @media screen and (min-width: 768px) {
   .el-col {
+    height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
   }

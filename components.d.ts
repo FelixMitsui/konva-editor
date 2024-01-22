@@ -16,6 +16,7 @@ declare module 'vue' {
     ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
     ElDropdownMenu: typeof import('element-plus/es')['ElDropdownMenu']
     ElInputNumber: typeof import('element-plus/es')['ElInputNumber']
+    ElInvputNumber: typeof import('element-plus/es')['ElInvputNumber']
     ElOption: typeof import('element-plus/es')['ElOption']
     ElPopover: typeof import('element-plus/es')['ElPopover']
     ElRow: typeof import('element-plus/es')['ElRow']
@@ -24,6 +25,7 @@ declare module 'vue' {
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Screen: typeof import('./src/components/Screen/index.vue')['default']
     Side: typeof import('./src/components/Side/index.vue')['default']
   }
 }

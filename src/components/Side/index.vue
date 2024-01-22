@@ -7,55 +7,54 @@
         content="新增圖層"
         placement="bottom"
       >
-        <el-button @click="handleCreateLayer">
+        <el-button @click="() => konva.newLayer()">
           <i class="fi fi-sr-square-plus"></i>
         </el-button>
       </el-tooltip>
     </div>
     <div
-      v-for="(slideshow, index) in konva.slideshows"
+      v-for="(url, index) in slideshowUrls"
       :key="index"
       class="layer-item"
       :class="{ 'frame-focus': focusRef === index }"
     >
       <img
         style="width: 100%; height: 100%; object-fit: fill"
-        :src="getLayerDataURL(slideshow.layer, index)"
-        @click="handleSwitchSlideshow(index)"
+        :src="url"
+        @click="() => handleSwitchSlideshow(index)"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import Konva from 'konva'
-const urls: string[] = []
+import useKonvaStore from '@/store/modules/konva'
 
 const focusRef = ref<number>(0)
-const { konva } = defineProps(['konva'])
-
-const handleCreateLayer = () => {
-  konva.newLayer()
-}
+const { konva, slideshowUrls } = useKonvaStore()
 const handleSwitchSlideshow = (index: number) => {
+  konva.transf.nodes([])
+  slideshowUrls[focusRef.value] =
+    konva.slideshows[focusRef.value].layer.toDataURL()
   focusRef.value = index
-  konva.switchSlideshow(index)
+  konva.controller.switchSlideshow(index)
 }
-const getLayerDataURL = (layer: Konva.Layer, index: number) => {
-  let url
 
+watchEffect(() => {
   if (konva.isUpdateSideLayer) {
-    url = layer.toDataURL()
-    urls[index] = url
+    konva.slideshows.forEach((konva: Konva.LabelConfig, index: number) => {
+      if (slideshowUrls[index] && focusRef.value !== index) return
+      const url = konva.layer.toDataURL()
+      slideshowUrls[index] = url
+    })
   }
-  return urls[index]
-}
+})
 </script>
 
 <style scoped lang="scss">
 .side-container {
-  height: 100%;
   display: flex;
   .layer-item {
     min-width: 150px;
