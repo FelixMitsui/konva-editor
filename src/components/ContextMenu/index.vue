@@ -5,7 +5,7 @@
       :key="key"
       class="contextmenu-item"
       :class="item.disabled ? 'disabled' : 'default'"
-      @click="konva.pickMenuOption(item.type)"
+      @click="konva.controller.pickMenuOption(item.type)"
     >
       {{ item.name }}
     </div>

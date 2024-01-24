@@ -19,5 +19,6 @@ export const graphList: IGraph[] = [
 export const menuList: IMenuList[] = [
   { name: '上移', type: 'moveUp', disabled: false },
   { name: '下移', type: 'moveDown', disabled: false },
+  { name: '複製', type: 'clone', disabled: false },
   { name: '刪除', type: 'destroy', disabled: false },
 ]

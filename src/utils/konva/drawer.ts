@@ -63,6 +63,7 @@ export default class Drawer {
       isEdit: true,
       scaleX: 1,
       scaleY: 1,
+      strokeScaleEnabled: false,
       offset: {
         x: 100 / 2,
         y: 50 / 2,
@@ -120,18 +121,18 @@ export default class Drawer {
 
       case GraphType.STAR: {
         const { width, height, offset, ...rest } = attrs
-         return new Konva.Star({
+        return new Konva.Star({
           ...rest,
           numPoints: 5,
-          innerRadius: 80,
-          outerRadius: 30,
+          innerRadius: 40,
+          outerRadius: 15,
           offset: {
             x: 0,
             y: 0,
           },
         })
       }
-       
+
       case GraphType.FAN: {
         const { width, height, offset, ...rest } = attrs
         return new Konva.Wedge({
@@ -156,17 +157,28 @@ export default class Drawer {
           },
         })
       }
-      case GraphType.LINE:
+      case GraphType.LINE: {
+        const { width, height, offset, ...rest } = attrs
+        const points = [0, 50, 140, 50, 250, 50, 300, 50]
+        const centerX = (points[points.length - 2] + points[0]) / 2
+        const centerY = (points[1] + points[points.length - 1]) / 2
         return new Konva.Line({
-          ...attrs,
+          ...rest,
           ...data,
           fill: 'black',
-          points: [0, 50, 140, 50, 250, 50, 300, 50],
+          points: points,
           stroke: 'black',
-          strokeWidth: 8,
           lineCap: 'round',
           lineJoin: 'round',
+          width: 100,
+          strokeWidth: 2,
+          offset: {
+            x: centerX,
+            y: centerY,
+          },
         })
+      }
+       
       case GraphType.ELLIPSE: {
         const { width, height, offset, ...rest } = attrs
         return new Konva.Ellipse({
@@ -181,16 +193,23 @@ export default class Drawer {
       }
 
       case GraphType.ARROW: {
- 
+        const { width, height, offset, ...rest } = attrs
+        const points = [0, 50, 140, 50]
+        const centerX = (points[points.length - 2] + points[0]) / 2
+        const centerY = (points[1] + points[points.length - 1]) / 2
         return new Konva.Arrow({
-          ...attrs,
+          ...rest,
           ...data,
           pointerLength: 5,
           pointerWidth: 5,
           fill: 'black',
-          points: [0, 50, 140, 50],
+          points: points,
           stroke: 'black',
           strokeWidth: 3,
+          offset: {
+            x: centerX,
+            y: centerY,
+          },
         })
       }
 
@@ -203,7 +222,6 @@ export default class Drawer {
           fontSize: 24,
           fontStyle: '',
           width: 170,
-          height: 40,
           strokeWidth: 0,
           align: 'left',
           padding: 10,

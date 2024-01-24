@@ -37,10 +37,24 @@ export default class Controller {
           y: 0,
         },
       }
+    } else if (type === 'arrow' || type === 'line') {
+      const points = this.konva.selectTarget.attrs.points
+      const centerX = (points[points.length - 2] + points[0]) / 2
+      const centerY = (points[1] + points[points.length - 1]) / 2
+
+      attr = {
+        ...attr,
+        offset: {
+          x: centerX,
+          y: centerY,
+        },
+      }
     }
 
     this.konva.selectTarget.setAttrs(attr)
+    this.konva.isUpdateSideLayer = true
     this.konva.selectTarget.draw()
+    if (this.konva.selectTarget.attrs.type === 'canvas') return
     this.konva.transf?.nodes([this.konva.selectTarget])
   }
   pickMenuOption(type: string) {
@@ -54,8 +68,12 @@ export default class Controller {
     } else if (type === 'destroy') {
       this.konva.selectTarget.destroy()
       this.konva.isMenuVisible = false
+      this.konva.transf?.nodes([])
+    } else if (type === 'clone') {
+      const cloneTarget = this.konva.selectTarget.clone()
+      this.konva.group?.add(cloneTarget)
+      this.konva.isMenuVisible = false
     }
-    this.konva.transf?.nodes([])
   }
 
   changeZoom(command: number) {
@@ -160,9 +178,12 @@ export default class Controller {
     this.konva.layer?.remove()
     this.konva.layer = this.konva.slideshows[index].layer
     this.konva.group = this.konva.slideshows[index].group
+    this.konva.slideshows[index].transf.nodes([])
     this.konva.transf = this.konva.slideshows[index].transf
+    console.log(index)
     this.konva.layer.add(this.konva.transf, this.konva.group)
     this.konva.stage?.add(this.konva.layer)
+
     this.changeZoom(this.konva.zoom)
   }
 }

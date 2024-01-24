@@ -7,7 +7,7 @@
         content="新增圖層"
         placement="bottom"
       >
-        <el-button @click="() => konva.newLayer()">
+        <el-button @click="handleAddLayer">
           <i class="fi fi-sr-square-plus"></i>
         </el-button>
       </el-tooltip>
@@ -35,21 +35,27 @@ import useKonvaStore from '@/store/modules/konva'
 const focusRef = ref<number>(0)
 const { konva, slideshowUrls } = useKonvaStore()
 const handleSwitchSlideshow = (index: number) => {
-  konva.transf.nodes([])
+  konva.isUpdateSideLayer = false
   slideshowUrls[focusRef.value] =
     konva.slideshows[focusRef.value].layer.toDataURL()
   focusRef.value = index
   konva.controller.switchSlideshow(index)
 }
-
+const handleAddLayer = () => {
+  konva.isUpdateSideLayer = true
+  konva.newLayer()
+}
 watchEffect(() => {
   if (konva.isUpdateSideLayer) {
-    console.log('更新')
-    konva.slideshows.forEach((konva: Konva.LabelConfig, index: number) => {
+    konva.slideshows.forEach((item: Konva.LabelConfig, index: number) => {
       if (slideshowUrls[index] && focusRef.value !== index) return
-      const url = konva.layer.toDataURL()
+      item.transf.nodes([])
+      const url = item.layer.toDataURL()
       slideshowUrls[index] = url
+      if (konva.selectTarget.attrs.type === 'canvas') return
+      item.transf?.nodes([konva.selectTarget])
     })
+
   }
 })
 </script>

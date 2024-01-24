@@ -28,13 +28,11 @@ export default class Listener {
           if (!domAttrs.isEdit) {
             return
           }
-
-          if (this.konva.selectTarget.attrs.id === domAttrs.id) return
+          if (this.konva.selectTarget._id === domAttrs._id) return
 
           this.konva.selectTarget.off()
           this.konva.selectTarget = dom
-
-          if (this.konva.type === 'text') {
+          if (this.konva.selectTarget.attrs.type === 'text') {
             this.textEvent(dom)
           } else {
             this.shapeEvent(dom)
@@ -60,6 +58,8 @@ export default class Listener {
             this.konva.transf?.enabledAnchors([
               'top-left',
               'top-right',
+              'middle-right',
+              'middle-left',
               'bottom-left',
               'bottom-right',
             ])
@@ -147,6 +147,7 @@ export default class Listener {
 
     text.on('transform', () => {
       if (!this.konva.transf) return
+      console.log("text")
       text.setAttrs({
         width: Math.max(text.width() * text.scaleX(), 20),
         scaleX: 1,
