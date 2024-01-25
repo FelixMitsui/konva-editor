@@ -55,17 +55,18 @@ watchEffect(() => {
       if (konva.selectTarget.attrs.type === 'canvas') return
       item.transf?.nodes([konva.selectTarget])
     })
-
   }
 })
 </script>
 
 <style scoped lang="scss">
 .side-container {
+  padding: 0.5rem;
   display: flex;
   .layer-item {
+    display: flex;
     min-width: 150px;
-    height: 100px;
+    min-height: 100px;
     width: 150px;
     margin: 0.5rem;
     border: 1px solid black;
@@ -78,17 +79,13 @@ watchEffect(() => {
     margin-bottom: 0.5rem;
     align-self: flex-end;
   }
-  &img {
-    margin-bottom: 0.5rem;
-  }
 }
 @media screen and (min-width: 768px) {
   .side-container {
     flex-direction: column;
     .layer-item {
-      min-width: auto;
-      width: auto;
-      height: auto;
+      width: 100%;
+      height: 100%
     }
   }
 }
