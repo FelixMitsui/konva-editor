@@ -2,7 +2,7 @@
 
 ![首頁](https://github.com/FelixMitsui/konva-editor/blob/main/public/images/konva動畫.gif?raw=true)
 
-部屬網址: https://konva-editor.vercel.app/
+部屬網址: https://konva-editor-two.vercel.app
 
 ## 介紹
 
