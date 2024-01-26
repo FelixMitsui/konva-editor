@@ -332,14 +332,15 @@ const getOpacity = (opacity: number) => {
 
 const fullScreen = () => {
   let full = document.fullscreenElement
-  const target = document.getElementById('screen') as HTMLElement
+  const target = document.getElementById('screen') as HTMLElement | null
 
   if (!full) {
     ;(isFullScreen as Ref<boolean>).value = true
     konva.controller.changeZoom(1)
     konva.transf.nodes([])
-    target.requestFullscreen()
+     target?.requestFullscreen()
   }
+  
 }
 </script>
 

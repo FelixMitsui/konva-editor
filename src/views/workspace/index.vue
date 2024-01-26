@@ -1,6 +1,6 @@
 <template>
   <el-row class="container">
-    <el-col :xs="24" :sm="7" :md="5">
+    <el-col xs="24" :sm="7" :md="5">
       <Side></Side>
     </el-col>
     <el-col :xs="24" :sm="17" :md="19">
@@ -14,13 +14,12 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { onMounted, inject, ref, Ref, watchEffect } from 'vue'
 import useKonvaStore from '@/store/modules/konva'
 import ContextMenu from '@/components/ContextMenu/index.vue'
 import Side from '@/components/Side/index.vue'
-
 const { konva } = useKonvaStore()
-
+const isFullScreen = inject('isFullScreen')
 onMounted(() => {
   //初始化Konva對象
   konva.init()
@@ -28,6 +27,7 @@ onMounted(() => {
   //   konva.controller.onresize()
   // }
 })
+
 </script>
 
 <style scoped lang="scss">
