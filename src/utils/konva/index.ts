@@ -4,35 +4,45 @@ import { menuList } from './config'
 import Listener from './listener'
 import Drawer from './drawer'
 import Controller from './controller'
+import Animation from './animation'
 export class KonvaJS {
+  [x: string]: any
   public id: string
   public stage: Konva.Stage | null
   public layer: Konva.Layer | null
   public transf: Konva.Transformer | null
   public group: Konva.Group | null
+  public currentLayerIndex: number
   public zoom: number
   public type: GraphType | TextType | null
   public isMenuVisible: boolean
   public isUpdateSideLayer: boolean
+  public isScreen: boolean
   public selectTarget: Konva.Node
   public menuList: IMenuList[]
   public slideshows: {
     layer: Konva.Layer
     group: Konva.Group
     transf: Konva.Transformer
+    anim: Array<{ tween: Konva.Tween; type: string }>
   }[]
   private listener: Listener
   public drawer: Drawer
   public controller: Controller
+  public animation: Animation
+  public animCount: number
   constructor(id: string) {
     //div標籤 id屬性
     this.id = id
     //選取目標的類型
     this.type = null
     this.stage = null
+    this.screen = null
     this.layer = null
     this.transf = null
     this.group = null
+    this.currentLayerIndex = 0
+    this.isScreen = false
     this.zoom = 1
     //控制目標顯示隱藏選單
     this.isMenuVisible = false
@@ -47,6 +57,8 @@ export class KonvaJS {
     this.listener = new Listener(this)
     this.drawer = new Drawer(this)
     this.controller = new Controller(this)
+    this.animation = new Animation(this)
+    this.animCount = 0
   }
   init() {
     const el = document.getElementById(this.id)
@@ -103,6 +115,7 @@ export class KonvaJS {
     }
     layer.add(group)
     this.slideshows.push({
+      anim: [],
       layer: layer,
       group: group,
       transf: transf,

@@ -1,17 +1,15 @@
 <template>
-  <div id="screen" class="container">
-    <img :src="screenUrlRef" style="width: 100%; height: 100%" />
-  </div>
+  <div id="screen" class="container"></div>
 </template>
 <script setup lang="ts">
 import { ref, Ref, watchEffect, onMounted, onUnmounted, inject } from 'vue'
 import useKonvaStore from '../../store/modules/konva'
-const { slideshowUrls } = useKonvaStore()
+const { slideshowUrls, konva } = useKonvaStore()
 const screenUrlRef = ref<string>('')
 const countRef = ref<number>(0)
-const isFullScreen = inject('isFullScreen')
+const isFullScreenRef = inject('isFullScreenRef')
 const handleToggleSlideshow = () => {
-  if (!(isFullScreen as Ref<boolean>).value) return
+  if (!(isFullScreenRef as Ref<boolean>).value) return
 
   if (slideshowUrls.length > 1 && countRef.value < slideshowUrls.length) {
     screenUrlRef.value = slideshowUrls[countRef.value]
@@ -19,13 +17,14 @@ const handleToggleSlideshow = () => {
   }
 }
 watchEffect(() => {
-  if (slideshowUrls[0]) {
-    screenUrlRef.value = slideshowUrls[0]
-  }
 
-  if (!isFullScreen.value) {
-    countRef.value = 0
-  }
+  // if (slideshowUrls[0]) {
+  //   screenUrlRef.value = slideshowUrls[0]
+  // }
+
+  // if (!isFullScreenRef.value) {
+  //   countRef.value = 0
+  // }
 })
 onMounted(() => {
   document.addEventListener('click', handleToggleSlideshow)
@@ -38,6 +37,10 @@ onUnmounted(() => {
 .container {
   width: 100%;
   height: 100%;
+  #screen {
+    height: 100%;
+    width: 100%;
+  }
 }
 img {
   width: 100%;

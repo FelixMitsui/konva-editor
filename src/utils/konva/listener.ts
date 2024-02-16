@@ -22,16 +22,26 @@ export default class Listener {
         this.konva.isMenuVisible = false
         const dom = event.target
         const domAttrs = dom.getAttrs()
+
         //點擊左鍵
         if (event.evt.button === 0) {
           //目標不可編輯退出
           if (!domAttrs.isEdit) {
             return
           }
+
+          if (this.konva.isScreen) {
+
+            this.konva.animation.playAnim()
+            return
+          }
+
           if (this.konva.selectTarget._id === domAttrs._id) return
 
           this.konva.selectTarget.off()
           this.konva.selectTarget = dom
+
+      
           if (this.konva.selectTarget.attrs.type === 'text') {
             this.textEvent(dom)
           } else {
@@ -147,7 +157,7 @@ export default class Listener {
 
     text.on('transform', () => {
       if (!this.konva.transf) return
-      console.log("text")
+      console.log('text')
       text.setAttrs({
         width: Math.max(text.width() * text.scaleX(), 20),
         scaleX: 1,

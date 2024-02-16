@@ -11,7 +11,23 @@ export default class Controller {
     if (!el) {
       return
     }
+    if (!this.konva.stage) return
     const { clientWidth, clientHeight } = el
+    const target = this.konva.group?.findOne(
+      (node) => node.attrs.type === 'canvas',
+    )
+    const width = this.konva.stage.width()
+    const height = this.konva.stage.height()
+    const scale = Math.min(1, width / 1024)
+    const x = (width - 1024 * scale) / 2
+    const y = (height - 576 * scale) / 2
+    target?.setAttrs({
+      x: x,
+      y: y,
+      scaleX: scale,
+      scaleY: scale,
+    })
+
     this.konva.stage?.setAttrs({
       width: clientWidth,
       height: clientHeight,
@@ -176,14 +192,52 @@ export default class Controller {
     }
 
     this.konva.layer?.remove()
+
     this.konva.layer = this.konva.slideshows[index].layer
     this.konva.group = this.konva.slideshows[index].group
     this.konva.slideshows[index].transf.nodes([])
     this.konva.transf = this.konva.slideshows[index].transf
-    console.log(index)
     this.konva.layer.add(this.konva.transf, this.konva.group)
     this.konva.stage?.add(this.konva.layer)
-
+    this.konva.currentLayerIndex = index
+    if (this.konva.isScreen) return
     this.changeZoom(this.konva.zoom)
+  }
+
+  toggleFullScreen(isFull?: boolean) {
+    const full = document.fullscreenElement
+    const el = document.getElementById('canvas') as HTMLElement
+
+    if (!full && isFull) {
+      this.konva.animation.resetAllAnim()
+      this.konva.transf?.nodes([])
+      this.konva.selectTarget.setDraggable(false)
+      this.changeZoom(1)
+      this.konva.stage?.setAttrs({
+        width: screen.width,
+        height: screen.height,
+        scaleX: 1.6,
+        scaleY: 1.6,
+        y: -45,
+      })
+      el?.requestFullscreen()
+      this.konva.isScreen = true
+    } else if (!full && isFull == undefined) {
+      this.konva.selectTarget.setDraggable(true)
+      const { clientWidth, clientHeight } = el
+      const x = clientWidth / 2 - clientWidth / 2
+      const y = clientHeight / 2 - clientHeight / 2
+      this.konva.stage?.setAttrs({
+        width: clientWidth,
+        height: clientHeight,
+        x: x,
+        y: y,
+        scaleX: 1,
+        scaleY: 1,
+      })
+      this.konva.animCount = 0
+      this.konva.animation.resetAllAnim()
+      this.konva.isScreen = false
+    }
   }
 }

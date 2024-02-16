@@ -10,4 +10,10 @@
 .container {
   height: $main-height;
 }
+
+@media screen and (min-width: 768px) {
+  .container {
+    height: 90vh;
+  }
+}
 </style>

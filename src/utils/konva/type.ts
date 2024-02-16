@@ -18,6 +18,12 @@ export enum GraphType {
 export enum TextType {
   TEXT = 'text',
 }
+
+export enum AnimType {
+  ROTATION = ' ROTATION',
+  FADE_IN = 'FADE_IN',
+  FADE_OUT = 'FADE_OUT',
+}
 export interface IGraph {
   name: string
   icon: string

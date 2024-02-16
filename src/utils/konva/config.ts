@@ -1,4 +1,5 @@
-import { IGraph, GraphType, IMenuList } from './type'
+import { IGraph, GraphType, IMenuList, AnimType } from './type'
+
 export const graphList: IGraph[] = [
   { name: '矩形', icon: 'icon-juxing', type: GraphType.RECT },
   {
@@ -21,4 +22,10 @@ export const menuList: IMenuList[] = [
   { name: '下移', type: 'moveDown', disabled: false },
   { name: '複製', type: 'clone', disabled: false },
   { name: '刪除', type: 'destroy', disabled: false },
+]
+
+export const animOptions: Array<{ label: string; value: string }> = [
+  { label: '旋轉', value: AnimType.ROTATION },
+  { label: '淡入', value: AnimType.FADE_IN },
+  { label: '淡出', value: AnimType.FADE_OUT },
 ]

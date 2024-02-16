@@ -36,6 +36,7 @@ const focusRef = ref<number>(0)
 const { konva, slideshowUrls } = useKonvaStore()
 const handleSwitchSlideshow = (index: number) => {
   konva.isUpdateSideLayer = false
+  konva.currentCanvasIndex = index
   slideshowUrls[focusRef.value] = konva.slideshows[
     focusRef.value
   ].layer.toDataURL({ mimeType: 'image/jpeg', quality: 1, pixelRatio: 2 })
@@ -57,7 +58,7 @@ watchEffect(() => {
         pixelRatio: 2,
       })
       slideshowUrls[index] = url
-      if (konva.selectTarget.attrs.type === 'canvas') return
+      if (konva.selectTarget.attrs.type === 'canvas' || undefined) return
       item.transf?.nodes([konva.selectTarget])
     })
   }
@@ -66,16 +67,15 @@ watchEffect(() => {
 
 <style scoped lang="scss">
 .side-container {
-  padding: 0.5rem;
   display: flex;
+  align-items: center;
+  height: 100%;
   .layer-item {
     display: flex;
-    min-width: 150px;
-    min-height: 100px;
-    width: 150px;
-    margin: 0.5rem;
+    margin: 0.2rem;
+    width: 25%;
+    height: 100%;
     border: 1px solid black;
-
     &.frame-focus {
       border: 2px solid rgb(0, 137, 235);
     }
@@ -87,10 +87,12 @@ watchEffect(() => {
 }
 @media screen and (min-width: 768px) {
   .side-container {
+    height: 100%;
+    margin: 0;
     flex-direction: column;
     .layer-item {
+      height: 25%;
       width: 100%;
-      height: 100%;
     }
   }
 }
