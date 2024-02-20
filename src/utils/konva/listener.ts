@@ -29,9 +29,8 @@ export default class Listener {
           if (!domAttrs.isEdit) {
             return
           }
-
+          console.log(dom)
           if (this.konva.isScreen) {
-
             this.konva.animation.playAnim()
             return
           }
@@ -41,7 +40,6 @@ export default class Listener {
           this.konva.selectTarget.off()
           this.konva.selectTarget = dom
 
-      
           if (this.konva.selectTarget.attrs.type === 'text') {
             this.textEvent(dom)
           } else {
@@ -127,8 +125,8 @@ export default class Listener {
     shape.on('transformstart', () => {
       this.konva.isUpdateSideLayer = false
     })
-    shape.on('transformend', () => {
-      const attrs = shape.getAttrs()
+    shape.on('transformend', (event) => {
+      const attrs = event.target.getAttrs()
       this.konva.selectTarget.attrs = { ...attrs }
       this.konva.isUpdateSideLayer = true
     })
@@ -137,6 +135,42 @@ export default class Listener {
       const attrs = shape.getAttrs()
       this.konva.selectTarget.attrs = { ...attrs }
       this.konva.isUpdateSideLayer = true
+    })
+
+    shape.on('click', () => {
+      const attrs = shape.getAttrs()
+      if (attrs.name === 'video') {
+        const video = document.createElement('video')
+
+        const target = this.konva.group?.findOne(
+          (node) => node.attrs.type === 'canvas',
+        )
+        if (!target) return
+
+        console.log(target.scaleX())
+        video.src = shape?.image().src
+        video.controls = true
+        const position = shape.getAbsolutePosition()
+        const rectClientRect = shape.getClientRect()
+        video.style.position = 'absolute'
+        video.style.left = `${ rectClientRect.x}px`
+        video.style.top = `${ rectClientRect.y}px`
+        video.style.width = `${rectClientRect.width}px`
+        video.style.height = `${rectClientRect.height}px`
+        this.konva.stage?.container()?.appendChild(video)
+        this.konva.layer?.draw()
+
+        video.addEventListener('blur', function () {
+          console.log('666666')
+          video.remove()
+        })
+      }
+    })
+
+    shape.on('blur', () => {
+      const video = document.getElementsByTagName('video')[0]
+      console.log('blur')
+      video.remove()
     })
   }
   //監聽文本

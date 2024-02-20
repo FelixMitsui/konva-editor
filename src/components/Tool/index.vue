@@ -33,6 +33,15 @@
             </div>
           </template>
         </el-popover>
+        <div class="tool-item">
+          <label for="videoInput"><i class="fi fi-br-video-plus"></i></label>
+          <input
+            type="file"
+            accept="video/*"
+            id="videoInput"
+            @click="konva.addVideo"
+          />
+        </div>
       </div>
       <div class="tool-group">
         <div class="tool-item">
@@ -91,6 +100,9 @@ const handleFullScreen = (bool: boolean) => {
 </script>
 
 <style scoped lang="scss">
+#videoInput {
+  display: none;
+}
 .container {
   width: 100%;
   display: flex;

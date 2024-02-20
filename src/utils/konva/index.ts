@@ -15,6 +15,7 @@ export class KonvaJS {
   public currentLayerIndex: number
   public zoom: number
   public type: GraphType | TextType | null
+  public video: VideoFrame | null
   public isMenuVisible: boolean
   public isUpdateSideLayer: boolean
   public isScreen: boolean
@@ -42,6 +43,7 @@ export class KonvaJS {
     this.transf = null
     this.group = null
     this.currentLayerIndex = 0
+    this.video = null
     this.isScreen = false
     this.zoom = 1
     //控制目標顯示隱藏選單
@@ -130,5 +132,62 @@ export class KonvaJS {
   //建立變換器
   newTransformer(data: Konva.TransformerConfig) {
     return new Konva.Transformer(data)
+  }
+  //新增影片
+  addVideo() {
+    const input = document.getElementById('videoInput')
+    if (!input) return
+    const video = document.createElement('video')
+
+    const videoChange = (event: { target: { files: any[] } }) => {
+      const file = event.target.files[0]
+      if (!file) return
+      const src = URL.createObjectURL(file)
+      video.src = src
+
+      video.addEventListener('loadedmetadata', () => {
+        video.controls = true
+        const target = this.group?.findOne(
+          (node: Konva.Node) => node.attrs.type === 'canvas',
+        )
+        if (!target) return
+        const rect = new Konva.Image({
+          image: video,
+          name: 'video',
+          type: GraphType.RECT,
+          id: this.getUUID(),
+          draggable: true,
+          isEdit: true,
+          width: 500 * target.scaleX(),
+          height: 281 * target.scaleY(),
+          x: 0,
+          y: 0,
+        })
+
+        const position = rect.getAbsolutePosition()
+        video.style.position = 'absolute'
+        video.style.left = `${position.x}px`
+        video.style.top = `${position.y}px`
+        video.style.zIndex = '0'
+        video.style.background = 'black'
+        video.style.width = `${500 * target.scaleX()}px`
+        video.style.height = `${281 * target.scaleY()}px`
+        this.stage?.container()?.appendChild(video)
+        this.group?.add(rect)
+        this.layer?.draw()
+        this.selectTarget = rect
+      })
+
+      video.addEventListener('error', (e) => {
+        URL.revokeObjectURL(src)
+        console.log(e.message)
+      })
+    }
+
+    video.addEventListener('blur', function () {
+      video.remove()
+    })
+    input.removeEventListener('change', videoChange)
+    input.addEventListener('change', videoChange)
   }
 }
