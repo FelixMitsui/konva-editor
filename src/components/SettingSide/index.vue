@@ -11,6 +11,11 @@
           動畫
         </el-button>
       </div>
+      <!-- <div :class="{ active: toggleSettingRef == Video }">
+        <el-button size="small" @click="() => handleToggleSetting(Video)">
+          會議
+        </el-button>
+      </div> -->
     </div>
     <div class="tool">
       <Tool></Tool>
@@ -20,13 +25,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect, shallowRef, provide } from 'vue'
+import { shallowRef, provide } from 'vue'
 import Edit from './Edit/index.vue'
 import Animation from './Animation/index.vue'
 import Tool from '../Tool/index.vue'
-const toggleSettingRef = shallowRef<Edit | Animation | null>(Edit)
+import Video from './Video/index.vue'
+const toggleSettingRef = shallowRef< Edit | Animation | Video | null>(Edit)
 provide('toggleSettingRef', toggleSettingRef)
-const handleToggleSetting = (value) => {
+const handleToggleSetting = (value: Edit | Animation | Video | null) => {
   toggleSettingRef.value = value
 }
 </script>
@@ -34,6 +40,7 @@ const handleToggleSetting = (value) => {
 <style scoped lang="scss">
 .container {
   width: 100%;
+
   .btn-group {
     display: flex;
     margin-right: 0.5rem;
@@ -61,7 +68,10 @@ const handleToggleSetting = (value) => {
 @media screen and (min-width: 768px) {
   .container {
     flex-direction: column;
+
     .btn-group {
+      overflow-x: auto;
+      padding: 0.5rem 0;
       margin-right: 0;
       > div {
         padding-bottom: 0.2rem;

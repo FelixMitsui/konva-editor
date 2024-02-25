@@ -33,5 +33,6 @@ declare module 'vue' {
     SettingSide: typeof import('./src/components/SettingSide/index.vue')['default']
     Side: typeof import('./src/components/Side/index.vue')['default']
     Tool: typeof import('./src/components/Tool/index.vue')['default']
+    Video: typeof import('./src/components/SettingSide/Video/index.vue')['default']
   }
 }

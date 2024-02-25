@@ -55,7 +55,6 @@ export default class Animation {
         return tween
       }
       case AnimType.FADE_OUT: {
-        config.node.opacity(1)
         const tween = new Konva.Tween({
           ...config,
           opacity: 0,
@@ -87,42 +86,33 @@ export default class Animation {
   }
 
   playAnim() {
-    let currentLayerIndex = this.konva.currentLayerIndex
-    const anim = this.konva.slideshows[currentLayerIndex].anim
+  
+    const anim = this.konva.slideshows[this.konva.currentLayerIndex].anim
     const animLen = anim.length
     if (anim && this.konva.animCount < animLen) {
-      this.konva.slideshows[currentLayerIndex].anim[
+      console.log( animLen )
+      this.konva.slideshows[this.konva.currentLayerIndex].anim[
         this.konva.animCount
       ].tween.reset()
 
-      if (
-        this.konva.slideshows[currentLayerIndex].anim[
-          this.konva.animCount
-        ].tween.node.opacity() == 1
-      ) {
-        this.konva.slideshows[currentLayerIndex].anim[
-          this.konva.animCount
-        ].tween.node.opacity(0)
-      } else {
-        this.konva.slideshows[currentLayerIndex].anim[
-          this.konva.animCount
-        ].tween.node.opacity(1)
-      }
-      this.konva.slideshows[currentLayerIndex].anim[
+      this.konva.slideshows[this.konva.currentLayerIndex].anim[
         this.konva.animCount
       ].tween.play()
 
       this.konva.animCount++
-    } else {
-      if (this.konva.slideshows.length - 1 == currentLayerIndex) {
-        return
-      }
-      this.konva.animCount = 0
-      currentLayerIndex++
-
-      this.konva.controller.switchSlideshow(currentLayerIndex)
+      return
+    } else if (
+      this.konva.slideshows.length - 1 ==
+      this.konva.currentLayerIndex
+    ) {
+      console.log('最後一頁')
+      return
     }
-    return
+    console.log('換頁')
+    this.konva.animCount = 0
+    this.konva.currentLayerIndex += 1
+    
+    this.konva.controller.switchSlideshow(this.konva.currentLayerIndex)
   }
   resetAllAnim() {
     this.konva.slideshows.forEach((slideshow: Konva.NodeConfig) => {

@@ -67,16 +67,17 @@ export class KonvaJS {
     if (!el) {
       return
     }
-    const { clientWidth, clientHeight } = el
-    const x = clientWidth / 2 - clientWidth / 2
-    const y = clientHeight / 2 - clientHeight / 2
-    //此處建立主舞台
+    const { clientWidth } = el
+    const ratio = clientWidth / 16
+    const width = ratio * 16
+    const height = ratio * 9
+
     this.stage = new Konva.Stage({
       container: this.id,
-      width: clientWidth,
-      height: clientHeight,
-      x: x,
-      y: y,
+      width: width,
+      height: height,
+      x: 0,
+      y: 0,
       draggable: false,
       isEdit: false,
       type: GraphType.STAGE,

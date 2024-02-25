@@ -2,7 +2,7 @@
   <div id="screen" class="container"></div>
 </template>
 <script setup lang="ts">
-import { ref, Ref, watchEffect, onMounted, onUnmounted, inject } from 'vue'
+import { ref, Ref, inject } from 'vue'
 import useKonvaStore from '../../store/modules/konva'
 const { slideshowUrls, konva } = useKonvaStore()
 const screenUrlRef = ref<string>('')
@@ -16,34 +16,14 @@ const handleToggleSlideshow = () => {
     countRef.value++
   }
 }
-watchEffect(() => {
-
-  // if (slideshowUrls[0]) {
-  //   screenUrlRef.value = slideshowUrls[0]
-  // }
-
-  // if (!isFullScreenRef.value) {
-  //   countRef.value = 0
-  // }
-})
-onMounted(() => {
-  document.addEventListener('click', handleToggleSlideshow)
-})
-onUnmounted(() => {
-  document.removeEventListener('click', handleToggleSlideshow)
-})
 </script>
 <style scoped lang="scss">
 .container {
-  width: 100%;
-  height: 100%;
+  width: 100cqmax;
+  height: 100cqmax;
   #screen {
-    height: 100%;
-    width: 100%;
+    width: 100cqmax;
+  height: 100cqmax;
   }
-}
-img {
-  width: 100%;
-  height: 100%;
 }
 </style>

@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import useKonvaStore from '@/store/modules/konva'
 import ContextMenu from '@/components/ContextMenu/index.vue'
 import SettingSide from '@/components/SettingSide/index.vue'
@@ -25,18 +25,24 @@ import Side from '@/components/Side/index.vue'
 
 const { konva } = useKonvaStore()
 
+const handleFullScreen = () => {
+
+  if (document.fullscreenElement === null) {
+    konva.controller.toggleFullScreen(false)
+  }
+}
 onMounted(() => {
   //初始化Konva對象
   konva.init()
-  
+
   window.onresize = () => {
     konva.controller.onresize()
   }
-  const handleFullScreen = () => {
-    konva.transf?.nodes([])
-    konva.controller.toggleFullScreen()
-  }
+
   document.addEventListener('fullscreenchange', handleFullScreen)
+})
+onUnmounted(() => {
+  document.removeEventListener('fullscreenchange', handleFullScreen)
 })
 </script>
 
@@ -49,23 +55,29 @@ onMounted(() => {
 #canvas {
   height: 100%;
   width: 100%;
+  background: $canvas-background;
   position: relative;
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .el-col {
   padding: 0.2rem;
   &:nth-child(1) {
     order: 2;
-    height: 18vh;
+    height: 15vh;
   }
   &:nth-child(2) {
     border: 2px solid gray;
     background: $base-background;
     overflow-y: hidden;
     height: 75vh;
+    width: 100%;
   }
   &:nth-child(3) {
-    height: 7vh;
+    height: 10vh;
     border-bottom: 2px solid gray;
   }
 }

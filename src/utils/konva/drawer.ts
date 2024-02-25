@@ -28,18 +28,14 @@ export default class Drawer {
 
     const width = this.konva.stage.width()
     const height = this.konva.stage.height()
-    const scale = Math.min(1, width / 1024)
-    const x = (width - 1024 * scale) / 2
-    const y = (height - 576 * scale) / 2
+
     const canvas = new Konva.Rect({
       id: this.konva.getUUID(),
       name: GraphType.CANVAS,
-      x: x,
-      y: y,
-      width: 1024,
-      height: 576,
-      scaleX: scale,
-      scaleY: scale,
+      x: 0,
+      y: 0,
+      width: width,
+      height: height,
       fill: '#ffffff',
       draggable: false,
       stroke: '#ffffff',

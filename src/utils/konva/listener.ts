@@ -29,13 +29,12 @@ export default class Listener {
           if (!domAttrs.isEdit) {
             return
           }
-          console.log(dom)
           if (this.konva.isScreen) {
             this.konva.animation.playAnim()
             return
           }
-
-          if (this.konva.selectTarget._id === domAttrs._id) return
+          console.log(this.konva.selectTarget.attrs.id)
+          if (this.konva.selectTarget.attrs.id === domAttrs.id) return
 
           this.konva.selectTarget.off()
           this.konva.selectTarget = dom
@@ -146,30 +145,27 @@ export default class Listener {
           (node) => node.attrs.type === 'canvas',
         )
         if (!target) return
-
-        console.log(target.scaleX())
         video.src = shape?.image().src
         video.controls = true
-        const position = shape.getAbsolutePosition()
         const rectClientRect = shape.getClientRect()
         video.style.position = 'absolute'
-        video.style.left = `${ rectClientRect.x}px`
-        video.style.top = `${ rectClientRect.y}px`
+        video.style.left = `${rectClientRect.x}px`
+        video.style.top = `${rectClientRect.y}px`
         video.style.width = `${rectClientRect.width}px`
         video.style.height = `${rectClientRect.height}px`
         this.konva.stage?.container()?.appendChild(video)
         this.konva.layer?.draw()
 
         video.addEventListener('blur', function () {
-          console.log('666666')
           video.remove()
         })
       }
     })
 
     shape.on('blur', () => {
+      const attrs = shape.getAttrs()
+      if (attrs.name != 'video') return
       const video = document.getElementsByTagName('video')[0]
-      console.log('blur')
       video.remove()
     })
   }
@@ -191,7 +187,6 @@ export default class Listener {
 
     text.on('transform', () => {
       if (!this.konva.transf) return
-      console.log('text')
       text.setAttrs({
         width: Math.max(text.width() * text.scaleX(), 20),
         scaleX: 1,
@@ -207,6 +202,9 @@ export default class Listener {
       //創建文字框
       const position = text.getAbsolutePosition()
       const input = document.createElement('textarea')
+      const canvas = document.getElementById(this.konva.id)
+      const { clientHeight } = canvas
+      const diffHeight = (clientHeight - this.konva.stage?.height()) / 2
       input.style.position = 'absolute'
       const rotation = text.rotation()
       const offset = text.offset()
@@ -219,14 +217,18 @@ export default class Listener {
           offset.y * Math.cos((rotation * Math.PI) / 180),
       }
 
-      input.style.left = `${position.x - rotatedOffset.x}px`
+      input.style.left = `${
+        position.x - rotatedOffset.x * this.konva.stage?.scaleX()
+      }px`
       input.style.padding = '10px'
       input.style.color = text.attrs.fill
-      input.style.top = `${position.y - rotatedOffset.y}px`
+      input.style.top = `${
+        diffHeight + position.y - rotatedOffset.y * this.konva.stage?.scaleX()
+      }px`
       input.style.transform = `rotate(${rotation}deg)`
       input.style.transformOrigin = 'top left'
-      input.style.width = text.width() + 'px'
-      input.style.height = text.height() + 'px'
+      input.style.width = text.width() * this.konva.stage?.scaleX() + 'px'
+      input.style.height = text.height() * this.konva.stage?.scaleX() + 'px'
       input.value = text.attrs.text
       input.style.outline = 'none'
       input.style.resize = 'vertical'
@@ -237,9 +239,12 @@ export default class Listener {
       input.style.fontWeight = text.attrs.fontStyle.includes('bold')
         ? 'bold'
         : ''
-      input.style.fontSize = (text.attrs.fontSize + 'px').toString()
-      const canvas = document.getElementById('canvas')
-      canvas?.appendChild(input)
+      input.style.fontSize = (
+        text.attrs.fontSize * this.konva.stage?.scaleX() +
+        'px'
+      ).toString()
+
+      this.konva.stage?.container()?.appendChild(input)
       input.focus()
       text.setAttrs({ text: '', skewX: 0 })
 

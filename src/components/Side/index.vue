@@ -91,6 +91,17 @@ watchEffect(() => {
     margin: 0;
     flex-direction: column;
     .layer-item {
+      height: 16.6666%;
+      width: 100%;
+    }
+  }
+}
+@media screen and (min-width: 960px) {
+  .side-container {
+    height: 100%;
+    margin: 0;
+    flex-direction: column;
+    .layer-item {
       height: 25%;
       width: 100%;
     }

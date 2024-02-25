@@ -7,30 +7,30 @@ export default class Controller {
   }
 
   onresize() {
+    if (this.konva.isScreen) return
+
     const el = document.getElementById(this.konva.id)
     if (!el) {
       return
     }
     if (!this.konva.stage) return
-    const { clientWidth, clientHeight } = el
+    if (this.konva.isScreen) return
+    const { clientWidth } = el
+
     const target = this.konva.group?.findOne(
       (node) => node.attrs.type === 'canvas',
     )
-    const width = this.konva.stage.width()
-    const height = this.konva.stage.height()
-    const scale = Math.min(1, width / 1024)
-    const x = (width - 1024 * scale) / 2
-    const y = (height - 576 * scale) / 2
-    target?.setAttrs({
-      x: x,
-      y: y,
-      scaleX: scale,
-      scaleY: scale,
-    })
+    if (!target) return
+    const scale = clientWidth / target.width()
+    const ratio = clientWidth / 16
+    const width = ratio * 16
+    const height = ratio * 9
 
     this.konva.stage?.setAttrs({
-      width: clientWidth,
-      height: clientHeight,
+      width: width,
+      height: height,
+      scaleX: scale,
+      scaleY: scale,
     })
   }
   updatePickAttrs(attr: Konva.NodeConfig) {
@@ -187,12 +187,8 @@ export default class Controller {
     if (targetIndex !== -1) {
       this.konva.slideshows[targetIndex].layer = this.konva.layer as Konva.Layer
       this.konva.slideshows[targetIndex].group = this.konva.group as Konva.Group
-      this.konva.slideshows[targetIndex].transf = this.konva
-        .transf as Konva.Transformer
     }
-
-    this.konva.layer?.remove()
-
+    this.konva.layer?.visible(false)
     this.konva.layer = this.konva.slideshows[index].layer
     this.konva.group = this.konva.slideshows[index].group
     this.konva.slideshows[index].transf.nodes([])
@@ -200,44 +196,37 @@ export default class Controller {
     this.konva.layer.add(this.konva.transf, this.konva.group)
     this.konva.stage?.add(this.konva.layer)
     this.konva.currentLayerIndex = index
+    this.konva.layer?.visible(true)
+    this.konva.layer?.batchDraw()
+    if (this.konva.isScreen) {
+      const canvas = this.konva.layer?.getCanvas()._canvas
+      canvas?.requestFullscreen()
+    }
+
     if (this.konva.isScreen) return
+
     this.changeZoom(this.konva.zoom)
   }
 
   toggleFullScreen(isFull?: boolean) {
     const full = document.fullscreenElement
-    const el = document.getElementById('canvas') as HTMLElement
-
+    this.konva.layer?.draw()
+    const canvas = this.konva.layer?.getCanvas()._canvas
+    this.konva.currentLayerIndex = 0
     if (!full && isFull) {
+      console.log('全屏')
       this.konva.animation.resetAllAnim()
       this.konva.transf?.nodes([])
-      this.konva.selectTarget.setDraggable(false)
-      this.changeZoom(1)
-      this.konva.stage?.setAttrs({
-        width: screen.width,
-        height: screen.height,
-        scaleX: 1.6,
-        scaleY: 1.6,
-        y: -45,
-      })
-      el?.requestFullscreen()
+      this.konva.stage?.setDraggable(false)
+      canvas?.requestFullscreen()
       this.konva.isScreen = true
-    } else if (!full && isFull == undefined) {
-      this.konva.selectTarget.setDraggable(true)
-      const { clientWidth, clientHeight } = el
-      const x = clientWidth / 2 - clientWidth / 2
-      const y = clientHeight / 2 - clientHeight / 2
-      this.konva.stage?.setAttrs({
-        width: clientWidth,
-        height: clientHeight,
-        x: x,
-        y: y,
-        scaleX: 1,
-        scaleY: 1,
-      })
+    } else if (!isFull) {
+      console.log('退出')
+      this.konva.stage?.setDraggable(true)
       this.konva.animCount = 0
       this.konva.animation.resetAllAnim()
       this.konva.isScreen = false
+      this.switchSlideshow(0)
     }
   }
 }
